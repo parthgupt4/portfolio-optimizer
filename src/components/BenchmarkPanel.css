@@ -1,0 +1,116 @@
+.bm-section {
+  margin-bottom: 48px;
+}
+
+.bm-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  margin-bottom: 20px;
+}
+
+.bm-table {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.bm-header,
+.bm-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  align-items: center;
+}
+@media (max-width: 600px) {
+  .bm-header, .bm-row {
+    grid-template-columns: 1.2fr 0.8fr 0.8fr 0.8fr;
+  }
+}
+
+.bm-header {
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0;
+}
+
+.bm-row {
+  border-bottom: 1px solid var(--border);
+  padding: 14px 0;
+}
+.bm-row:last-child { border-bottom: none; }
+.bm-row:hover { background: rgba(255,255,255,0.015); }
+
+.bm-row-label {
+  padding: 0 20px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.bm-cell {
+  padding: 0 16px;
+  text-align: center;
+}
+.bm-col-head {
+  display: flex;
+  justify-content: center;
+}
+
+.bm-col-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 3px 10px;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.06);
+  color: var(--text-muted);
+}
+.bm-col-tag.accent-tag {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+}
+.bm-col-tag.spy-tag {
+  background: rgba(74, 222, 128, 0.08);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.25);
+}
+
+.bm-val {
+  font-size: 16px;
+  font-weight: 700;
+}
+.bm-val.accent { color: var(--accent); }
+.bm-val.secondary { color: #4ade80; }
+
+.bm-diff {
+  font-size: 13px;
+  font-weight: 600;
+}
+.bm-diff.positive { color: #4ade80; }
+.bm-diff.negative { color: #f87171; }
+
+/* Commentary */
+.bm-commentary {
+  margin-top: 20px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+.bm-commentary-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.bm-commentary-line {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 8px;
+}
+.bm-commentary-line:last-child { margin-bottom: 0; }
