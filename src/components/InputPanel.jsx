@@ -81,11 +81,56 @@ const RISK_PROFILES = [
 
 // Stock autocomplete list (same as before)
 const STOCK_SUGGESTIONS = [
-  'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META', 'NFLX', 'AMD', 'INTC',
-  'JPM', 'BAC', 'WMT', 'DIS', 'V', 'MA', 'PYPL', 'UBER', 'LYFT', 'COIN',
-  'SPY', 'QQQ', 'VTI', 'BND', 'GLD', 'VEA', 'IWM', 'EEM', 'VNQ', 'TLT',
-  'BRKB', 'JNJ', 'PG', 'KO', 'PEP', 'MCD', 'SBUX', 'NKE', 'ADBE', 'CRM',
-  'ORCL', 'IBM', 'CSCO', 'QCOM', 'TXN', 'AVGO', 'MU', 'SHOP', 'SQ', 'PLTR',
+  { ticker: 'AAPL',  name: 'Apple Inc' },
+  { ticker: 'MSFT',  name: 'Microsoft Corporation' },
+  { ticker: 'GOOGL', name: 'Alphabet Inc' },
+  { ticker: 'AMZN',  name: 'Amazon.com Inc' },
+  { ticker: 'TSLA',  name: 'Tesla Inc' },
+  { ticker: 'NVDA',  name: 'NVIDIA Corporation' },
+  { ticker: 'META',  name: 'Meta Platforms Inc' },
+  { ticker: 'NFLX',  name: 'Netflix Inc' },
+  { ticker: 'AMD',   name: 'Advanced Micro Devices' },
+  { ticker: 'INTC',  name: 'Intel Corporation' },
+  { ticker: 'JPM',   name: 'JPMorgan Chase & Co' },
+  { ticker: 'BAC',   name: 'Bank of America Corp' },
+  { ticker: 'WMT',   name: 'Walmart Inc' },
+  { ticker: 'DIS',   name: 'The Walt Disney Company' },
+  { ticker: 'V',     name: 'Visa Inc' },
+  { ticker: 'MA',    name: 'Mastercard Incorporated' },
+  { ticker: 'PYPL',  name: 'PayPal Holdings Inc' },
+  { ticker: 'UBER',  name: 'Uber Technologies Inc' },
+  { ticker: 'LYFT',  name: 'Lyft Inc' },
+  { ticker: 'COIN',  name: 'Coinbase Global Inc' },
+  { ticker: 'SPY',   name: 'SPDR S&P 500 ETF Trust' },
+  { ticker: 'QQQ',   name: 'Invesco Nasdaq 100 ETF' },
+  { ticker: 'VTI',   name: 'Vanguard Total Stock Market ETF' },
+  { ticker: 'BND',   name: 'Vanguard Total Bond Market ETF' },
+  { ticker: 'GLD',   name: 'SPDR Gold Shares' },
+  { ticker: 'VEA',   name: 'Vanguard FTSE Developed Markets ETF' },
+  { ticker: 'IWM',   name: 'iShares Russell 2000 ETF' },
+  { ticker: 'EEM',   name: 'iShares MSCI Emerging Markets ETF' },
+  { ticker: 'VNQ',   name: 'Vanguard Real Estate ETF' },
+  { ticker: 'TLT',   name: 'iShares 20+ Year Treasury Bond ETF' },
+  { ticker: 'BRKB',  name: 'Berkshire Hathaway Inc' },
+  { ticker: 'JNJ',   name: 'Johnson & Johnson' },
+  { ticker: 'PG',    name: 'Procter & Gamble Co' },
+  { ticker: 'KO',    name: 'The Coca-Cola Company' },
+  { ticker: 'PEP',   name: 'PepsiCo Inc' },
+  { ticker: 'MCD',   name: "McDonald's Corporation" },
+  { ticker: 'SBUX',  name: 'Starbucks Corporation' },
+  { ticker: 'NKE',   name: 'Nike Inc' },
+  { ticker: 'ADBE',  name: 'Adobe Inc' },
+  { ticker: 'CRM',   name: 'Salesforce Inc' },
+  { ticker: 'ORCL',  name: 'Oracle Corporation' },
+  { ticker: 'IBM',   name: 'IBM Corporation' },
+  { ticker: 'CSCO',  name: 'Cisco Systems Inc' },
+  { ticker: 'QCOM',  name: 'Qualcomm Incorporated' },
+  { ticker: 'TXN',   name: 'Texas Instruments Inc' },
+  { ticker: 'AVGO',  name: 'Broadcom Inc' },
+  { ticker: 'MU',    name: 'Micron Technology Inc' },
+  { ticker: 'SHOP',  name: 'Shopify Inc' },
+  { ticker: 'SQ',    name: 'Block Inc' },
+  { ticker: 'PLTR',  name: 'Palantir Technologies Inc' },
 ];
 
 function isValidFormat(ticker) {
@@ -125,11 +170,16 @@ export default function InputPanel({ onOptimize, isLoading, savedState, onLogoRe
 
   const allTickers = [...tickers, ...selectedIndexes];
 
-  // Filtered stock suggestions
+  // Filtered stock suggestions — match ticker prefix OR company name substring
   const filteredStocks = tickerInput.trim()
-    ? STOCK_SUGGESTIONS.filter(
-        s => s.startsWith(tickerInput.trim().toUpperCase()) && !allTickers.includes(s)
-      )
+    ? STOCK_SUGGESTIONS.filter(s => {
+        const query = tickerInput.trim().toUpperCase();
+        const queryLower = tickerInput.trim().toLowerCase();
+        return (
+          !allTickers.includes(s.ticker) &&
+          (s.ticker.startsWith(query) || s.name.toLowerCase().includes(queryLower))
+        );
+      })
     : [];
 
   // Filtered ETF suggestions — exclude defaults and already-added extras
@@ -281,11 +331,12 @@ export default function InputPanel({ onOptimize, isLoading, savedState, onLogoRe
               <ul className="ticker-dropdown">
                 {filteredStocks.map(s => (
                   <li
-                    key={s}
+                    key={s.ticker}
                     className="ticker-dropdown-item"
-                    onMouseDown={e => { e.preventDefault(); addTicker(s); }}
+                    onMouseDown={e => { e.preventDefault(); addTicker(s.ticker); }}
                   >
-                    {s}
+                    <span className="stock-dd-ticker">{s.ticker}</span>
+                    <span className="stock-dd-name">{s.name}</span>
                   </li>
                 ))}
               </ul>

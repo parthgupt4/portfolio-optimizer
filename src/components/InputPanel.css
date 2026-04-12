@@ -116,17 +116,33 @@
   overflow-y: auto;
 }
 .ticker-dropdown-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
   padding: 9px 14px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
   cursor: pointer;
-  letter-spacing: 0.3px;
-  transition: background 0.12s, color 0.12s;
+  transition: background 0.12s;
 }
 .ticker-dropdown-item:hover {
   background: var(--accent-dim);
+}
+.ticker-dropdown-item:hover .stock-dd-ticker {
   color: var(--accent);
+}
+.stock-dd-ticker {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+  transition: color 0.12s;
+}
+.stock-dd-name {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .btn-add {
