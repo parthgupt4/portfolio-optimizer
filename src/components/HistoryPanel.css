@@ -1,0 +1,235 @@
+.history-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 900;
+  animation: histFadeIn 0.18s ease;
+}
+
+.history-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 380px;
+  max-width: 100vw;
+  height: 100vh;
+  background: #0a0a0a;
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  flex-direction: column;
+  animation: histSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes histSlideIn {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes histFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Header */
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.history-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.2px;
+}
+
+.history-close {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+.history-close:hover { color: rgba(255, 255, 255, 0.65); }
+
+/* Body */
+.history-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+/* Unauthenticated */
+.history-unauth {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 52px 20px;
+  gap: 10px;
+}
+.history-unauth-icon {
+  font-size: 36px;
+  color: var(--accent);
+  margin-bottom: 6px;
+  opacity: 0.7;
+}
+.history-unauth-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+.history-unauth-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 260px;
+  margin-bottom: 4px;
+}
+.btn-history-signin {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  padding: 10px 26px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.18s, transform 0.12s;
+  font-family: inherit;
+  margin-top: 6px;
+}
+.btn-history-signin:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+/* Loading */
+.history-loading {
+  display: flex;
+  justify-content: center;
+  padding: 52px;
+}
+.history-spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: histSpin 0.7s linear infinite;
+}
+
+/* Empty */
+.history-empty {
+  text-align: center;
+  padding: 52px 20px;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+/* List */
+.history-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-entry {
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 14px;
+  transition: border-color 0.18s;
+}
+.history-entry:hover { border-color: rgba(255, 255, 255, 0.12); }
+
+.history-entry-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.history-entry-date {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.history-entry-risk {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.history-entry-assets {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-entry-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.history-entry-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.history-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.history-stat-label {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.history-stat-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.btn-load-entry {
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.18s;
+  font-family: inherit;
+}
+.btn-load-entry:hover { background: rgba(137, 207, 240, 0.2); }
+
+@keyframes histSpin {
+  to { transform: rotate(360deg); }
+}

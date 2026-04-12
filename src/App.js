@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import InputPanel from './components/InputPanel';
 import ResultsPanel from './components/ResultsPanel';
+import AuthModal from './components/AuthModal';
+import HistoryPanel from './components/HistoryPanel';
 import {
   logReturns, mean, covMatrix, monteCarloSimulation,
   extractSpecialPortfolios, buildEfficientFrontier,
   sharpe,
 } from './utils/financeUtils';
 import { fetchHistoricalPrices, getDateRange, alignPriceSeries } from './utils/stockData';
+import { auth, db } from './firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 const RISK_PROFILE_KEY_MAP = {
   safe: 'minVar',
@@ -23,6 +28,69 @@ export default function App() {
   const [results, setResults] = useState(null);
   // Preserves form state across back-navigation; null = fresh defaults
   const [savedInputState, setSavedInputState] = useState(null);
+
+  // Auth & UI overlays
+  const [user, setUser] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, u => setUser(u));
+    return unsub;
+  }, []);
+
+  async function handleSignOut() {
+    try { await signOut(auth); } catch (_) {}
+  }
+
+  async function saveToFirestore(config, inputState, resultsData) {
+    if (!user) return;
+    const { investment, timeRange, riskProfile } = config;
+    const { portfolios, frontier, special, selectedPortfolio, tickers: alignedTickers, spyStats } = resultsData;
+    try {
+      await addDoc(collection(db, 'users', user.uid, 'optimizations'), {
+        timestamp: serverTimestamp(),
+        stocks: inputState.tickers,
+        indexFunds: inputState.selectedIndexes,
+        extraEtfs: inputState.extraEtfs,
+        riskProfile,
+        dollarAmount: investment,
+        timeRange,
+        results: {
+          allocation: selectedPortfolio.allocation,
+          stats: {
+            ret: selectedPortfolio.ret,
+            vol: selectedPortfolio.vol,
+            sharpeRatio: selectedPortfolio.sharpeRatio,
+          },
+          benchmark: spyStats,
+          // Full chart + restoration data
+          portfolios: portfolios.map(p => ({ ret: p.ret, vol: p.vol, sharpeRatio: p.sharpeRatio })),
+          frontier: frontier.map(p => ({ ret: p.ret, vol: p.vol })),
+          special: Object.fromEntries(
+            Object.entries(special).map(([k, v]) => [k, {
+              ret: v.ret,
+              vol: v.vol,
+              sharpeRatio: v.sharpeRatio,
+              allocation: v.allocation,
+              weights: v.weights || [],
+            }])
+          ),
+          selectedPortfolio: {
+            ret: selectedPortfolio.ret,
+            vol: selectedPortfolio.vol,
+            sharpeRatio: selectedPortfolio.sharpeRatio,
+            allocation: selectedPortfolio.allocation,
+            weights: selectedPortfolio.weights || [],
+          },
+          tickers: alignedTickers,
+          investment,
+        },
+      });
+    } catch (err) {
+      console.error('Failed to save optimization to Firestore:', err);
+    }
+  }
 
   async function handleOptimize(config, inputState) {
     setIsLoading(true);
@@ -87,8 +155,15 @@ export default function App() {
       }
 
       setLoadingStatus('Done!');
-      setResults({ portfolios, frontier, special, selectedPortfolio, tickers: alignedTickers, investment, timeRange, riskProfile, spyStats });
+      const newResults = {
+        portfolios, frontier, special, selectedPortfolio,
+        tickers: alignedTickers, investment, timeRange, riskProfile, spyStats,
+      };
+      setResults(newResults);
       setView('results');
+
+      // Save to Firestore in background (non-blocking)
+      saveToFirestore(config, inputState, newResults);
     } catch (err) {
       setErrorMsg(err.message || 'An unknown error occurred');
       setView('error');
@@ -112,6 +187,51 @@ export default function App() {
     setView('input');
   }
 
+  // Load a past optimization from history
+  function handleLoadHistory(entry) {
+    const investStr = entry.dollarAmount
+      ? Number(entry.dollarAmount).toLocaleString('en-US')
+      : '';
+
+    setSavedInputState({
+      tickers: entry.stocks || [],
+      selectedIndexes: entry.indexFunds || [],
+      extraEtfs: entry.extraEtfs || [],
+      investment: investStr,
+      timeRange: entry.timeRange,
+      riskProfile: entry.riskProfile,
+    });
+
+    const r = entry.results;
+    setResults({
+      portfolios: r.portfolios || [],
+      frontier: r.frontier || [],
+      special: r.special || {},
+      selectedPortfolio: r.selectedPortfolio || {
+        allocation: r.allocation || {},
+        weights: [],
+        ret: r.stats?.ret ?? 0,
+        vol: r.stats?.vol ?? 0,
+        sharpeRatio: r.stats?.sharpeRatio ?? 0,
+      },
+      tickers: r.tickers || [],
+      investment: r.investment ?? entry.dollarAmount ?? 0,
+      timeRange: entry.timeRange,
+      riskProfile: entry.riskProfile,
+      spyStats: r.benchmark || null,
+    });
+
+    setView('results');
+    setShowHistory(false);
+  }
+
+  const authProps = {
+    user,
+    onSignInClick: () => setShowAuthModal(true),
+    onSignOutClick: handleSignOut,
+    onHistoryClick: () => setShowHistory(true),
+  };
+
   return (
     <div className="app-root">
       {(view === 'input' || view === 'error') && (
@@ -122,6 +242,7 @@ export default function App() {
             loadingStatus={loadingStatus}
             savedState={savedInputState}
             onLogoReset={handleLogoReset}
+            {...authProps}
           />
           {view === 'error' && (
             <div className="error-banner">
@@ -145,6 +266,19 @@ export default function App() {
           spyStats={results.spyStats}
           onBack={handleBack}
           onLogoReset={handleLogoReset}
+          {...authProps}
+        />
+      )}
+
+      {showAuthModal && (
+        <AuthModal onClose={() => setShowAuthModal(false)} />
+      )}
+      {showHistory && (
+        <HistoryPanel
+          user={user}
+          onClose={() => setShowHistory(false)}
+          onLoad={handleLoadHistory}
+          onSignInClick={() => { setShowHistory(false); setShowAuthModal(true); }}
         />
       )}
     </div>

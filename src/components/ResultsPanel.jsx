@@ -23,6 +23,10 @@ export default function ResultsPanel({
   spyStats,
   onBack,
   onLogoReset,
+  user,
+  onSignInClick,
+  onSignOutClick,
+  onHistoryClick,
 }) {
   const resultsRef = useRef();
   const riskInfo = RISK_LABELS[riskProfile];
@@ -57,6 +61,28 @@ export default function ResultsPanel({
           </button>
         </div>
         <div className="results-topbar-right">
+          <button className="btn-header-action" onClick={onHistoryClick}>
+            History
+          </button>
+          {user ? (
+            <div className="header-user">
+              {user.photoURL ? (
+                <img
+                  className="user-avatar"
+                  src={user.photoURL}
+                  alt=""
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <div className="user-avatar-initial">
+                  {(user.displayName || user.email || '?')[0].toUpperCase()}
+                </div>
+              )}
+              <button className="btn-signout" onClick={onSignOutClick}>Sign out</button>
+            </div>
+          ) : (
+            <button className="btn-signin" onClick={onSignInClick}>Sign in</button>
+          )}
           <button className="btn-export" onClick={handleExportPDF}>
             ↓ Export PDF
           </button>
