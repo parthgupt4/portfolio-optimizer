@@ -148,7 +148,7 @@ function buildInitialState(savedState) {
   };
 }
 
-export default function InputPanel({ onOptimize, isLoading, savedState, onLogoReset }) {
+export default function InputPanel({ onOptimize, isLoading, loadingStatus, savedState, onLogoReset }) {
   const init = buildInitialState(savedState);
 
   const [tickerInput, setTickerInput] = useState(init.tickers.join('') === '' ? '' : '');
@@ -518,12 +518,19 @@ export default function InputPanel({ onOptimize, isLoading, savedState, onLogoRe
         {isLoading ? (
           <span className="loading-row">
             <span className="spinner large" />
-            Fetching data & running Monte Carlo…
+            Running optimization…
           </span>
         ) : (
           '◈ Optimize Portfolio'
         )}
       </button>
+
+      {isLoading && loadingStatus && (
+        <div className="loading-status">
+          <span className="loading-status-dot" />
+          {loadingStatus}
+        </div>
+      )}
     </div>
   );
 }

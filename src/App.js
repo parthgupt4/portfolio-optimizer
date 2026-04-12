@@ -18,6 +18,7 @@ const RISK_PROFILE_KEY_MAP = {
 export default function App() {
   const [view, setView] = useState('input'); // 'input' | 'results' | 'error'
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [results, setResults] = useState(null);
   // Preserves form state across back-navigation; null = fresh defaults
@@ -25,6 +26,7 @@ export default function App() {
 
   async function handleOptimize(config, inputState) {
     setIsLoading(true);
+    setLoadingStatus('Starting…');
     setErrorMsg('');
     // Save the raw form state so back-navigation restores it
     setSavedInputState(inputState);
@@ -37,9 +39,12 @@ export default function App() {
       const tickersToFetch = [...new Set([...tickers, 'SPY'])];
       let priceDataArray;
       try {
-        priceDataArray = await Promise.all(
-          tickersToFetch.map(t => fetchHistoricalPrices(t, period1, period2))
-        );
+        // Fetch sequentially so status messages are readable one at a time
+        priceDataArray = [];
+        for (const t of tickersToFetch) {
+          const data = await fetchHistoricalPrices(t, period1, period2, setLoadingStatus);
+          priceDataArray.push(data);
+        }
       } catch (err) {
         throw new Error(`Data fetch failed: ${err.message}`);
       }
@@ -81,6 +86,7 @@ export default function App() {
         spyStats = { ret: spyRet, vol: spyVol, sharpeRatio: sharpe(spyRet, spyVol) };
       }
 
+      setLoadingStatus('Done!');
       setResults({ portfolios, frontier, special, selectedPortfolio, tickers: alignedTickers, investment, timeRange, riskProfile, spyStats });
       setView('results');
     } catch (err) {
@@ -88,6 +94,7 @@ export default function App() {
       setView('error');
     } finally {
       setIsLoading(false);
+      setLoadingStatus('');
     }
   }
 
@@ -112,6 +119,7 @@ export default function App() {
           <InputPanel
             onOptimize={handleOptimize}
             isLoading={isLoading}
+            loadingStatus={loadingStatus}
             savedState={savedInputState}
             onLogoReset={handleLogoReset}
           />
