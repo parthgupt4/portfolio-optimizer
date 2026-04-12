@@ -492,7 +492,7 @@ export default function InputPanel({
           </div>
         </div>
         <div>
-          <div className="section-label">Time Range</div>
+          <div className="section-label">Data History Time Range</div>
           <div className="range-buttons">
             {TIME_RANGES.map(r => (
               <button
