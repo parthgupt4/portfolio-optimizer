@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import GlobeIcon from './GlobeIcon';
 import {
   signInWithPopup,
   signInWithEmailAndPassword,
@@ -88,11 +89,13 @@ export default function AuthModal({ onClose }) {
     <div className="auth-overlay" onMouseDown={e => e.target === e.currentTarget && onClose()}>
       <div className="auth-modal">
         <button className="auth-close" onClick={onClose} aria-label="Close">×</button>
-        <div className="auth-logo">◈</div>
+        <div className="auth-logo">
+          <GlobeIcon size={32} color="var(--accent)" />
+        </div>
         <h2 className="auth-title">
           {mode === 'signin' ? 'Sign in' : mode === 'signup' ? 'Create account' : 'Reset password'}
         </h2>
-        <p className="auth-sub">Portfolio Optimizer</p>
+        <p className="auth-sub">Atlas Allocation</p>
 
         {mode !== 'reset' && (
           <>

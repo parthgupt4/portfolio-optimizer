@@ -38,7 +38,7 @@
   font-size: 26px;
   font-weight: 700;
   letter-spacing: -0.5px;
-  color: #fff;
+  color: var(--text);
 }
 .app-sub {
   font-size: 13px;
@@ -174,7 +174,7 @@
   width: 100%;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  color: #fff;
+  color: var(--text);
   padding: 11px 14px;
   border-radius: 8px;
   font-size: 14px;
@@ -208,7 +208,7 @@
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  background: #1a1a1a;
+  background: var(--dropdown-bg);
   border: 1px solid var(--accent-border);
   border-radius: 8px;
   list-style: none;
@@ -236,7 +236,7 @@
 .stock-dd-ticker {
   font-size: 13px;
   font-weight: 700;
-  color: #fff;
+  color: var(--text);
   flex-shrink: 0;
   letter-spacing: 0.3px;
   transition: color 0.12s;
@@ -342,7 +342,7 @@
 .index-ticker {
   font-size: 14px;
   font-weight: 700;
-  color: #fff;
+  color: var(--text);
   margin-bottom: 2px;
 }
 .index-card.selected .index-ticker { color: var(--accent); }
@@ -444,7 +444,7 @@
 .risk-label {
   font-size: 15px;
   font-weight: 700;
-  color: #fff;
+  color: var(--text);
   margin-bottom: 2px;
 }
 .risk-card.selected .risk-label { color: var(--accent); }
@@ -607,7 +607,7 @@
   background: none;
   border: none;
   outline: none;
-  color: #fff;
+  color: var(--text);
   font-size: 13px;
   padding: 11px 0;
 }
@@ -621,7 +621,7 @@
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  background: #1a1a1a;
+  background: var(--dropdown-bg);
   border: 1px solid var(--accent-border);
   border-radius: 8px;
   list-style: none;
@@ -692,4 +692,41 @@
   background: #f87171;
   color: #000;
   border-color: #f87171;
+}
+
+/* ── Optimization counter (free plan) ── */
+.opt-counter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.opt-counter-bar {
+  height: 3px;
+  background: var(--surface-3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.opt-counter-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+.opt-counter.at-limit .opt-counter-fill {
+  background: var(--red);
+}
+.opt-counter-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+}
+.opt-counter.at-limit .opt-counter-text {
+  color: var(--red);
+}
+.opt-counter-limit {
+  font-size: 11px;
+  color: var(--red);
+  text-align: center;
+  opacity: 0.85;
 }

@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import GlobeIcon from './GlobeIcon';
+import UserButton from './UserButton';
 import './InputPanel.css';
 
 const DEFAULT_INDEX_FUNDS = [
@@ -150,7 +152,8 @@ function buildInitialState(savedState) {
 
 export default function InputPanel({
   onOptimize, isLoading, loadingStatus, savedState, onLogoReset,
-  user, onSignInClick, onSignOutClick, onHistoryClick,
+  user, userDoc, onSignInClick, onSignOutClick, onHistoryClick,
+  onProfileClick, onManageSubClick, onSettingsClick, theme, onThemeToggle,
 }) {
   const init = buildInitialState(savedState);
 
@@ -295,45 +298,41 @@ export default function InputPanel({
 
   const canOptimize = allTickers.length >= 2 && !isLoading;
 
+  // Optimization counter for free users
+  const today = new Date().toISOString().slice(0, 10);
+  const FREE_DAILY_LIMIT = 5;
+  const isFree = userDoc?.plan === 'free';
+  const optimizationsToday = isFree
+    ? (userDoc?.lastOptimizationDate === today ? (userDoc?.optimizationsToday || 0) : 0)
+    : null;
+  const isAtLimit = optimizationsToday !== null && optimizationsToday >= FREE_DAILY_LIMIT;
+
   return (
     <div className="input-panel">
       {/* Header — logo click resets everything */}
       <div className="panel-header">
         <div className="logo-row">
           <button className="logo-btn" onClick={handleLogoClick} title="Reset all selections">
-            <div className="logo-icon">◈</div>
+            <div className="logo-icon">
+              <GlobeIcon size={28} color="var(--accent)" />
+            </div>
             <div>
-              <h1 className="app-title">Portfolio Optimizer</h1>
-              <p className="app-sub">Modern Portfolio Theory · Efficient Frontier Analysis</p>
+              <h1 className="app-title">Atlas Allocation</h1>
+              <p className="app-sub">Institutional-grade portfolio optimization, built for everyone</p>
             </div>
           </button>
-          <div className="header-actions">
-            <button className="btn-header-action" onClick={onHistoryClick}>
-              History
-            </button>
-            {user ? (
-              <div className="header-user">
-                {user.photoURL ? (
-                  <img
-                    className="user-avatar"
-                    src={user.photoURL}
-                    alt=""
-                    referrerPolicy="no-referrer"
-                  />
-                ) : (
-                  <div className="user-avatar-initial">
-                    {(user.displayName || user.email || '?')[0].toUpperCase()}
-                  </div>
-                )}
-                <span className="user-display-name">
-                  {user.displayName || user.email?.split('@')[0] || 'User'}
-                </span>
-                <button className="btn-signout" onClick={onSignOutClick}>Sign out</button>
-              </div>
-            ) : (
-              <button className="btn-signin" onClick={onSignInClick}>Sign in</button>
-            )}
-          </div>
+          <UserButton
+            user={user}
+            userDoc={userDoc}
+            onSignInClick={onSignInClick}
+            onSignOutClick={onSignOutClick}
+            onHistoryClick={onHistoryClick}
+            onProfileClick={onProfileClick}
+            onManageSubClick={onManageSubClick}
+            onSettingsClick={onSettingsClick}
+            theme={theme}
+            onThemeToggle={onThemeToggle}
+          />
         </div>
       </div>
 
@@ -537,6 +536,24 @@ export default function InputPanel({
 
       {allTickers.length < 2 && (
         <div className="notice">Add at least 2 assets to run optimization</div>
+      )}
+
+      {/* Daily usage counter for free users */}
+      {isFree && optimizationsToday !== null && (
+        <div className={`opt-counter ${isAtLimit ? 'at-limit' : ''}`}>
+          <div className="opt-counter-bar">
+            <div
+              className="opt-counter-fill"
+              style={{ width: `${Math.min((optimizationsToday / FREE_DAILY_LIMIT) * 100, 100)}%` }}
+            />
+          </div>
+          <span className="opt-counter-text">
+            {optimizationsToday}/{FREE_DAILY_LIMIT} optimizations used today
+          </span>
+          {isAtLimit && (
+            <span className="opt-counter-limit">Daily limit reached — upgrade for unlimited</span>
+          )}
+        </div>
       )}
 
       {/* Optimize button */}
