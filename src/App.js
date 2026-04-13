@@ -25,7 +25,7 @@ import {
 } from 'firebase/firestore';
 
 const RISK_PROFILE_KEY_MAP = { safe: 'minVar', hopeful: 'maxSharpe', risky: 'maxReturn' };
-const ADMIN_EMAIL = 'pgupta10@berkeley.edu';
+const ADMIN_EMAIL = 'parthgupt4@gmail.com';
 const FREE_DAILY_LIMIT = 5;
 
 export default function App() {
